@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل تسليم التصميم للـ AI Agent — UI Team Guide</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #2a2f45;
+    --accent: #5b6ef5;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'IBM Plex Sans Arabic', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: #fff; color: #1a1a2e; font-size: 12px; }
+    .cover { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none; }
+    section { break-inside: avoid; }
+    .comparison-grid { break-inside: avoid; }
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1040 50%, #0f1117 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,110,245,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 100%, rgba(124,58,237,0.12) 0%, transparent 60%);
+  }
+
+  .cover-badge {
+    background: rgba(91,110,245,0.15);
+    border: 1px solid rgba(91,110,245,0.4);
+    color: #818cf8;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .cover h1 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .cover h1 span {
+    background: linear-gradient(135deg, #818cf8, #a78bfa, #5b6ef5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cover-subtitle {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .cover-meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .cover-meta-item .label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .cover-meta-item .value {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ============ LAYOUT ============ */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 32px;
+  }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 56px;
+  }
+
+  .toc h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 32px;
+  }
+
+  .toc-list li a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .toc-list li a:hover { color: var(--accent); }
+
+  .toc-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    min-width: 20px;
+  }
+
+  /* ============ SECTIONS ============ */
+  section {
+    margin-bottom: 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    background: rgba(91,110,245,0.1);
+    border: 1px solid rgba(91,110,245,0.25);
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 4px;
+    white-space: nowrap;
+  }
+
+  .section-title-wrap h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .section-title-wrap p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* ============ WHY BOX ============ */
+  .why-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+
+  .why-box .why-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--yellow);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .why-box p {
+    font-size: 14px;
+    color: #d4b896;
+    line-height: 1.6;
+  }
+
+  /* ============ COMPARISON ============ */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .comp-card {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .comp-card-header {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .comp-card.wrong .comp-card-header {
+    background: rgba(239,68,68,0.15);
+    color: #fca5a5;
+    border-bottom: 1px solid rgba(239,68,68,0.2);
+  }
+
+  .comp-card.right .comp-card-header {
+    background: rgba(16,185,129,0.15);
+    color: #6ee7b7;
+    border-bottom: 1px solid rgba(16,185,129,0.2);
+  }
+
+  .comp-card.wrong { border: 1px solid rgba(239,68,68,0.25); background: rgba(239,68,68,0.04); }
+  .comp-card.right { border: 1px solid rgba(16,185,129,0.25); background: rgba(16,185,129,0.04); }
+
+  .comp-card-body {
+    padding: 16px;
+  }
+
+  /* ============ CODE BLOCKS ============ */
+  .code-block {
+    background: #0a0d14;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+
+  .code-header {
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #f59e0b; }
+  .dot-green { background: #10b981; }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 16px;
+    overflow-x: auto;
+    line-height: 1.6;
+    color: #c9d1e3;
+    direction: ltr;
+    text-align: left;
+  }
+
+  .c-comment { color: #64748b; }
+  .c-key { color: #818cf8; }
+  .c-val { color: #a3e635; }
+  .c-str { color: #fbbf24; }
+  .c-good { color: #34d399; }
+  .c-bad { color: #f87171; }
+
+  /* ============ TABLE ============ */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .styled-table th {
+    background: rgba(91,110,245,0.1);
+    color: #a5b4fc;
+    font-weight: 600;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    text-align: right;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .styled-table td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+
+  .styled-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  .tag-flutter {
+    display: inline-block;
+    background: rgba(91,110,245,0.15);
+    color: #818cf8;
+    border: 1px solid rgba(91,110,245,0.3);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--mono);
+  }
+
+  .tag-web {
+    display: inline-block;
+    background: rgba(16,185,129,0.12);
+    color: #6ee7b7;
+    border: 1px solid rgba(16,185,129,0.25);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--mono);
+  }
+
+  /* ============ CHECKLIST ============ */
+  .checklist {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .checklist li .check-icon {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .checklist li strong {
+    color: var(--text);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* ============ INFO CARD ============ */
+  .info-card {
+    background: rgba(91,110,245,0.07);
+    border: 1px solid rgba(91,110,245,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  .info-card p { font-size: 14px; color: #a5b4fc; line-height: 1.7; }
+
+  /* ============ RULE CARDS ============ */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .rule-card-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .rule-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .rule-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ============ DIVIDER ============ */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* ============ FOOTER ============ */
+  .doc-footer {
+    text-align: center;
+    padding: 40px 32px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .print-btn {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: var(--sans);
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(91,110,245,0.4);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .print-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,110,245,0.5); }
+
+  @media (max-width: 640px) {
+    .comparison-grid { grid-template-columns: 1fr; }
+    .toc-list { grid-template-columns: 1fr; }
+    .rules-grid { grid-template-columns: 1fr; }
+    .container { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-badge">UI Team · Technical Guide</div>
+  <h1>كيف تسلّم التصميم<br><span>لـ AI Agent ؟</span></h1>
+  <p class="cover-subtitle">
+    دليل شامل للـ UI Designer لتنظيم ملف Figma بحيث يقدر الـ AI Agent يولّد كود Flutter أو Web بدقة 100%
+  </p>
+   <p class="cover-subtitle">
+    By Ahmed Slman
+  </p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="label">الهدف</span>
+      <span class="value">Pixel-Perfect Code</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">الأداة</span>
+      <span class="value">Figma → MCP → AI Agent</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">يناسب</span>
+      <span class="value">Flutter & Web Frontend</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>المحتويات</h2>
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="toc-num">01</span> ليه ده مهم؟</a></li>
+      <li><a href="#s2"><span class="toc-num">02</span> تنظيم الـ File</a></li>
+      <li><a href="#s3"><span class="toc-num">03</span> تسمية الـ Layers</a></li>
+      <li><a href="#s4"><span class="toc-num">04</span> Figma Variables</a></li>
+      <li><a href="#s5"><span class="toc-num">05</span> Components & Variants</a></li>
+      <li><a href="#s6"><span class="toc-num">06</span> Auto Layout</a></li>
+      <li><a href="#s7"><span class="toc-num">07</span> Dev Mode Annotations</a></li>
+      <li><a href="#s8"><span class="toc-num">08</span> Checklist التسليم</a></li>
+    </ul>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <div class="section-title-wrap">
+        <h2>ليه ده مهم؟</h2>
+        <p>فهم ازاي الـ AI بيقرأ Figma</p>
+      </div>
+    </div>
+
+    <div class="why-box">
+      <div class="why-label">⚡ الفكرة الأساسية</div>
+      <p>
+        الـ AI Agent بيتوصل بـ Figma عن طريق بروتوكول اسمه MCP (Model Context Protocol). الـ Agent مش "بيشوف" التصميم زي ما انت بتشوفه — هو بيقرأ بيانات خام: أسماء الـ Layers، الـ Properties، الـ Variables، والـ Auto Layout. <strong>لو التصميم مش منظم، الكود هيطلع غلط حتى لو التصميم نفسه تمام.</strong>
+      </p>
+    </div>
+
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>الـ AI بيشوف ✅</th>
+          <th>الـ AI مش بيشوف ❌</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>أسماء الـ Layers والـ Components</td><td>ترتيب العناصر visually</td></tr>
+        <tr><td>الـ Variables (Colors, Spacing, Typography)</td><td>التأثيرات المعمولة manually</td></tr>
+        <tr><td>خصائص الـ Auto Layout</td><td>اللي عملته بـ absolute position</td></tr>
+        <tr><td>الـ Variants والـ Properties</td><td>الـ Groups غير المسماة</td></tr>
+        <tr><td>الـ Constraints والـ Resizing</td><td>القصد من التصميم لو مش متوثّق</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-card">
+      <p>
+        <strong>النتيجة العملية:</strong> لما الـ Flutter developer يقول "الـ AI طلّع كود مش صح"، في الغالب المشكلة مش في الـ AI — المشكلة إن الـ Figma file مش بيقدر يوصل المعلومة الكافية. التصميم الصح = كود صح.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <div class="section-title-wrap">
+        <h2>تنظيم الـ File</h2>
+        <p>هيكل الملف يحدد سرعة وجودة الكود المولّد</p>
+      </div>
+    </div>
+
+    <div class="comparison-grid">
+      <div class="comp-card wrong">
+        <div class="comp-card-header">❌ الطريقة الغلط</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-bad">📄 Page 1</span>
+  ├── Frame 1
+  ├── Frame 2
+  ├── Components
+  └── Frame 47 (home)</pre>
+          </div>
+          <p style="font-size:13px; color: var(--text-muted); margin-top:8px;">كل حاجة في صفحة واحدة، مش واضح إيه الـ Design System وإيه الـ Screens.</p>
+        </div>
+      </div>
+      <div class="comp-card right">
+        <div class="comp-card-header">✅ الطريقة الصح</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-good">📄 _Design System</span>
+  ├── Colors & Variables
+  ├── Typography
+  └── Spacing
+
+<span class="c-good">📄 Components</span>
+  ├── Buttons
+  ├── Cards
+  └── Navigation
+
+<span class="c-good">📄 Screens</span>
+  ├── home_screen
+  ├── login_screen
+  └── product_detail_screen</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-box">
+      <div class="why-label">💡 ليه؟</div>
+      <p>الـ AI بيبدأ بقراءة الـ Design System ويولّد الـ ThemeData أول حاجة، بعدين يولّد الـ Widgets. لو كل حاجة في صفحة واحدة هيتوه ويولّد Hardcoded values.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <div class="section-title-wrap">
+        <h2>تسمية الـ Layers</h2>
+        <p>اسم الـ Layer بيبقى اسم الـ Widget أو الـ CSS class مباشرةً</p>
+      </div>
+    </div>
+
+    <div class="comparison-grid">
+      <div class="comp-card wrong">
+        <div class="comp-card-header">❌ تسمية غلط</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-bad">Rectangle 47
+Group 3
+Frame 892
+Text 12
+Ellipse 2
+image</span></pre>
+          </div>
+        </div>
+      </div>
+      <div class="comp-card right">
+        <div class="comp-card-header">✅ تسمية صح</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-good">product_card
+bottom_nav_bar
+home_screen
+heading_title
+avatar_image
+product_thumbnail</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="styled-table" style="margin-top:20px;">
+      <thead>
+        <tr>
+          <th>نوع العنصر</th>
+          <th>تسمية مقترحة</th>
+          <th>الكود المتوقع</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>شاشة كاملة</td>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">home_screen</code></td>
+          <td><span class="tag-flutter">HomeScreen()</span> <span class="tag-web">home-screen</span></td>
+        </tr>
+        <tr>
+          <td>كارت منتج</td>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">product_card</code></td>
+          <td><span class="tag-flutter">ProductCard()</span> <span class="tag-web">product-card</span></td>
+        </tr>
+        <tr>
+          <td>زرار رئيسي</td>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">primary_button</code></td>
+          <td><span class="tag-flutter">PrimaryButton()</span></td>
+        </tr>
+        <tr>
+          <td>عنوان رئيسي</td>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">heading_title</code></td>
+          <td><span class="tag-flutter">Text(style: headingTitle)</span></td>
+        </tr>
+        <tr>
+          <td>أيقونة</td>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">icon_search</code></td>
+          <td><span class="tag-flutter">Icon(Icons.search)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-card">
+      <p>
+        <strong>قاعدة:</strong> استخدم دايمًا <code style="font-family:var(--mono)">snake_case</code> (أحرف صغيرة + underscore). ابعد عن الأحرف الكبيرة والمسافات والأرقام المسلسلة. كل layer لازم يكون ليه اسم يوصف وظيفته مش شكله.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <div class="section-title-wrap">
+        <h2>Figma Variables (Design Tokens)</h2>
+        <p>أهم خطوة — بدونها الكود هيبقى hardcoded بالكامل</p>
+      </div>
+    </div>
+
+    <div class="why-box">
+      <div class="why-label">⚡ ليه Variables ضرورية؟</div>
+      <p>
+        لما الـ AI يشوف لون بـ HEX مباشرة زي <code style="font-family:var(--mono)">#FF5733</code> مش بيعرف هو ده الـ Primary Color ولا اللون ده بس هنا. لما تستخدم Variable باسم <code style="font-family:var(--mono)">brand/primary</code>، الـ AI يفهم إنه لازم يحطه في الـ AppTheme ويستخدمه بالاسم في كل مكان.
+      </p>
+    </div>
+
+    <div class="comparison-grid">
+      <div class="comp-card wrong">
+        <div class="comp-card-header">❌ بدون Variables</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <div class="code-header"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span> flutter output</div>
+            <pre><span class="c-comment">// الكود المولّد — hardcoded 😬</span>
+Container(
+  color: <span class="c-bad">Color(0xFFFF5733)</span>,
+  padding: <span class="c-bad">EdgeInsets.all(16)</span>,
+  child: Text(
+    'Hello',
+    style: TextStyle(
+      fontSize: <span class="c-bad">16</span>,
+      fontWeight: <span class="c-bad">FontWeight.w600</span>,
+    ),
+  ),
+)</pre>
+          </div>
+          <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">مستحيل تغير الـ theme لاحقاً بدون ما تدور على كل حاجة</p>
+        </div>
+      </div>
+      <div class="comp-card right">
+        <div class="comp-card-header">✅ مع Variables</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <div class="code-header"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span> flutter output</div>
+            <pre><span class="c-comment">// الكود المولّد — theme-aware 🎉</span>
+Container(
+  color: <span class="c-good">context.colors.primary</span>,
+  padding: <span class="c-good">AppSpacing.md</span>,
+  child: Text(
+    'Hello',
+    style: <span class="c-good">context.textTheme.bodyMedium</span>,
+  ),
+)</pre>
+          </div>
+          <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">تغيير الـ theme من مكان واحد يغير كل حاجة</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 24px 0 12px; font-size: 16px; color: var(--text);">التصنيفات المطلوبة في الـ Variables</h3>
+
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Collection</th>
+          <th>مثال</th>
+          <th>يتحول لـ Flutter</th>
+          <th>يتحول لـ Web</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">colors/</code></td>
+          <td><code style="font-family:var(--mono)">colors/brand/primary</code></td>
+          <td><span class="tag-flutter">AppColors.primary</span></td>
+          <td><span class="tag-web">--color-primary</span></td>
+        </tr>
+        <tr>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">spacing/</code></td>
+          <td><code style="font-family:var(--mono)">spacing/sm, spacing/md</code></td>
+          <td><span class="tag-flutter">AppSpacing.sm</span></td>
+          <td><span class="tag-web">--spacing-sm</span></td>
+        </tr>
+        <tr>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">typography/</code></td>
+          <td><code style="font-family:var(--mono)">typography/heading/h1</code></td>
+          <td><span class="tag-flutter">AppTextStyles.h1</span></td>
+          <td><span class="tag-web">--font-heading-h1</span></td>
+        </tr>
+        <tr>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">radius/</code></td>
+          <td><code style="font-family:var(--mono)">radius/sm, radius/lg</code></td>
+          <td><span class="tag-flutter">AppRadius.lg</span></td>
+          <td><span class="tag-web">--radius-lg</span></td>
+        </tr>
+        <tr>
+          <td><code style="font-family:var(--mono); color:#a78bfa;">elevation/</code></td>
+          <td><code style="font-family:var(--mono)">elevation/card</code></td>
+          <td><span class="tag-flutter">AppElevation.card</span></td>
+          <td><span class="tag-web">--shadow-card</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <div class="section-title-wrap">
+        <h2>Components & Variants</h2>
+        <p>كل عنصر بيتكرر لازم يبقى Component مع Variants للـ states</p>
+      </div>
+    </div>
+
+    <div class="comparison-grid">
+      <div class="comp-card wrong">
+        <div class="comp-card-header">❌ Group بس</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-bad">Group "button"</span>   ← الـ AI مش بيعرفه
+  Rectangle
+  Text "Click me"</pre>
+          </div>
+          <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">يولّد كود مكرر في كل شاشة بدون reusable widget</p>
+        </div>
+      </div>
+      <div class="comp-card right">
+        <div class="comp-card-header">✅ Component مع Variants</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-good">⬡ primary_button</span>  ← Figma Component
+  Variant: state=default
+  Variant: state=loading
+  Variant: state=disabled
+  Property: label (text)
+  Property: icon (boolean)</pre>
+          </div>
+          <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">يولّد widget واحد بيتعامل مع كل الحالات</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 24px 0 12px; font-size: 16px; color: var(--text);">الـ States المطلوبة لكل Component</h3>
+
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-card-icon">🔘</div>
+        <h3>Buttons</h3>
+        <p>default · loading · disabled · pressed · hover</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-icon">📝</div>
+        <h3>Input Fields</h3>
+        <p>empty · focused · filled · error · disabled</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-icon">🃏</div>
+        <h3>Cards</h3>
+        <p>default · loading (skeleton) · empty state</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-icon">📋</div>
+        <h3>List Items</h3>
+        <p>default · selected · disabled · swiped</p>
+      </div>
+    </div>
+
+    <div class="why-box" style="margin-top: 20px;">
+      <div class="why-label">💡 ليه Variants مهمة؟</div>
+      <p>الـ Flutter developer لو مش لاقي الـ loading state في التصميم، هيعمله بنفسه وممكن يختلف عن باقي الـ UI. لما الـ AI يشوف الـ Variants، بيولّد <code style="font-family:var(--mono)">enum ButtonState</code> وبيعمل الـ conditional rendering أوتوماتيك.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <div class="section-title-wrap">
+        <h2>Auto Layout</h2>
+        <p>Auto Layout = Flutter Layout Widgets مباشرةً</p>
+      </div>
+    </div>
+
+    <div class="why-box">
+      <div class="why-label">⚡ القاعدة الذهبية</div>
+      <p>
+        <strong>ممنوع Absolute Positioning</strong> — لما تحط عنصر بـ X/Y ثابتة، الـ AI هيولّد <code style="font-family:var(--mono)">Positioned</code> أو <code style="font-family:var(--mono)">Stack</code> في Flutter وده كود هش جداً ومش responsive. الـ Auto Layout هو اللي بيولّد الـ Column و Row و Wrap الصح.
+      </p>
+    </div>
+
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Figma Auto Layout</th>
+          <th>Flutter Widget</th>
+          <th>CSS/Web</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Vertical · Fill Container</td>
+          <td><span class="tag-flutter">Column + Expanded</span></td>
+          <td><span class="tag-web">flex-direction: column</span></td>
+        </tr>
+        <tr>
+          <td>Horizontal · Fixed Size</td>
+          <td><span class="tag-flutter">Row + SizedBox</span></td>
+          <td><span class="tag-web">display: flex; width: Xpx</span></td>
+        </tr>
+        <tr>
+          <td>Wrap (Horizontal)</td>
+          <td><span class="tag-flutter">Wrap</span></td>
+          <td><span class="tag-web">flex-wrap: wrap</span></td>
+        </tr>
+        <tr>
+          <td>Scrollable Vertical</td>
+          <td><span class="tag-flutter">SingleChildScrollView</span></td>
+          <td><span class="tag-web">overflow-y: auto</span></td>
+        </tr>
+        <tr>
+          <td>Grid Layout</td>
+          <td><span class="tag-flutter">GridView</span></td>
+          <td><span class="tag-web">display: grid</span></td>
+        </tr>
+        <tr>
+          <td>Absolute Position (Stack)</td>
+          <td><span class="tag-flutter">Stack + Positioned ⚠️</span></td>
+          <td><span class="tag-web">position: absolute ⚠️</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="comparison-grid" style="margin-top: 20px;">
+      <div class="comp-card wrong">
+        <div class="comp-card-header">❌ بدون Auto Layout</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-comment">// الكود المتوقع</span>
+<span class="c-bad">Stack(
+  children: [
+    Positioned(
+      top: 24, left: 16,
+      child: Text('Title'),
+    ),
+    Positioned(
+      top: 48, left: 16,
+      child: Text('Subtitle'),
+    ),
+  ]
+)</span></pre>
+          </div>
+          <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">مش Responsive — هيتكسر على شاشات مختلفة</p>
+        </div>
+      </div>
+      <div class="comp-card right">
+        <div class="comp-card-header">✅ مع Auto Layout</div>
+        <div class="comp-card-body">
+          <div class="code-block">
+            <pre><span class="c-comment">// الكود المتوقع</span>
+<span class="c-good">Column(
+  crossAxisAlignment:
+    CrossAxisAlignment.start,
+  children: [
+    Text('Title',
+      style: AppTextStyles.h2),
+    SizedBox(height: AppSpacing.sm),
+    Text('Subtitle',
+      style: AppTextStyles.body),
+  ],
+)</span></pre>
+          </div>
+          <p style="font-size:12px; color:var(--text-dim); margin-top:8px;">Responsive تلقائياً ✅</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <div class="section-title-wrap">
+        <h2>Dev Mode Annotations</h2>
+        <p>المعلومات اللي الـ AI مش يقدر يستنتجها من التصميم لوحده</p>
+      </div>
+    </div>
+
+    <p style="color: var(--text-muted); margin-bottom: 16px; font-size: 14px;">
+      في Figma، استخدم الـ <strong>Dev Mode</strong> أو الـ Comments عشان تكتب المعلومات دي على كل شاشة أو Component:
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span> Figma Dev Mode Annotation — product_card</div>
+      <pre><span class="c-key">Widget:</span>       <span class="c-val">ProductCard</span>
+<span class="c-key">State:</span>        <span class="c-val">BLoC → ProductBloc</span>
+<span class="c-key">Navigation:</span>   <span class="c-val">GoRouter → /product/:id</span>
+<span class="c-key">API:</span>          <span class="c-val">GET /api/products/{id}</span>
+<span class="c-key">On tap:</span>       <span class="c-val">Navigate to ProductDetailScreen</span>
+<span class="c-key">Loading:</span>      <span class="c-val">Show skeleton variant</span>
+<span class="c-key">Empty:</span>        <span class="c-val">Show empty_state component</span>
+<span class="c-key">Assets:</span>       <span class="c-val">product_image → WebP, max 400px</span></pre>
+    </div>
+
+    <div class="rules-grid" style="margin-top: 20px;">
+      <div class="rule-card">
+        <div class="rule-card-icon">🧭</div>
+        <h3>Navigation</h3>
+        <p>وضّح الـ route لكل زرار أو تاب — مش كل حاجة واضحة من التصميم لوحده</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-icon">🔌</div>
+        <h3>API Endpoint</h3>
+        <p>إيه الـ API اللي بتجيب البيانات للشاشة دي؟ (GET, POST, ...)</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-icon">📦</div>
+        <h3>State Type</h3>
+        <p>BLoC / Riverpod / Provider — وإيه الـ events المتوقعة</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-icon">🖼️</div>
+        <h3>Assets Format</h3>
+        <p>الأيقونات SVG، الصور WebP أو PNG مع الحد الأقصى للأبعاد</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8 — CHECKLIST -->
+  <section id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <div class="section-title-wrap">
+        <h2>Checklist التسليم</h2>
+        <p>قبل ما تقول "التصميم اتعمل" — تأكد من كل دول</p>
+      </div>
+    </div>
+
+    <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">📐 هيكل الملف</h3>
+    <ul class="checklist">
+      <li><span class="check-icon"></span><div><strong>صفحات منفصلة</strong> Design System · Components · Screens</div></li>
+      <li><span class="check-icon"></span><div><strong>كل الـ Screens</strong> مسماة بـ snake_case على صفحة Screens</div></li>
+      <li><span class="check-icon"></span><div><strong>لا توجد</strong> Frame أو Group غير مسماة في المستوى الأعلى</div></li>
+    </ul>
+
+    <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">🎨 Design Tokens</h3>
+    <ul class="checklist">
+      <li><span class="check-icon"></span><div><strong>Figma Variables</strong> معمولة لـ Colors / Spacing / Typography / Radius</div></li>
+      <li><span class="check-icon"></span><div><strong>لا توجد</strong> قيم Hardcoded (HEX أو أرقام مباشرة) على الـ Screens</div></li>
+      <li><span class="check-icon"></span><div><strong>Light & Dark modes</strong> معمولين كـ Variable Modes لو في متطلبات لده</div></li>
+    </ul>
+
+    <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">⬡ Components</h3>
+    <ul class="checklist">
+      <li><span class="check-icon"></span><div><strong>كل عنصر بيتكرر</strong> محوّل لـ Figma Component (مش Group)</div></li>
+      <li><span class="check-icon"></span><div><strong>كل Component</strong> عنده Variants لكل الـ States</div></li>
+      <li><span class="check-icon"></span><div><strong>Component Properties</strong> معمولة (text, icon, isDisabled, ...)</div></li>
+    </ul>
+
+    <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">📐 Layout</h3>
+    <ul class="checklist">
+      <li><span class="check-icon"></span><div><strong>Auto Layout</strong> مستخدم في كل Frame و Component (لا Absolute Position)</div></li>
+      <li><span class="check-icon"></span><div><strong>Constraints</strong> و Resizing محددة صح (Fill / Hug / Fixed)</div></li>
+      <li><span class="check-icon"></span><div><strong>Scroll behavior</strong> موضوح على الـ Frames اللي بتتسكرول</div></li>
+    </ul>
+
+    <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px;">📝 Documentation</h3>
+    <ul class="checklist">
+      <li><span class="check-icon"></span><div><strong>Dev Mode Annotations</strong> على كل Screen (Navigation، API، State)</div></li>
+      <li><span class="check-icon"></span><div><strong>Prototype Links</strong> موضوحة الـ Navigation Flow</div></li>
+      <li><span class="check-icon"></span><div><strong>Assets</strong> exported بالـ format الصح (SVG للأيقونات، WebP للصور)</div></li>
+    </ul>
+  </section>
+
+  <hr class="divider">
+
+  <div class="info-card" style="text-align: center;">
+    <p style="font-size: 16px; line-height: 1.8;">
+      <strong style="color: #a5b4fc; font-size: 18px;">الخلاصة</strong><br>
+      الـ AI Agent بيكون بس كويس زي الـ Figma file. التصميم المنظم = كود production-ready.<br>
+      التصميم الغير منظم = كود hardcoded محتاج refactoring بالكامل.
+    </p>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <p>UI Handoff Guide for AI Agent Integration · Flutter & Web · 2025</p>
+  <p style="margin-top: 6px; color: var(--text-dim); font-size: 12px;">طُلب هذا الدليل من فريق Flutter للتعاون بين الـ UI والـ Development Teams</p>
+</div>
+
+<!-- PRINT BUTTON -->
+<button class="print-btn no-print" onclick="window.print()">
+  🖨️ طباعة / PDF
+</button>
+
+</body>
+</html>
